@@ -1,0 +1,46 @@
+version: "2.0"
+
+services:
+    gitlab:
+        image: gitlab/gitlab-ce:latest
+        domainname: gitlab.roelof.io
+        hostname: gitlab
+        volumes:
+            - /srv/gitlab/config:/etc/gitlab
+            - /srv/gitlab/logs:/var/log/gitlab
+            - /srv/gitlab/data:/var/opt/gitlab
+        ports:
+            - '22:22'
+            - '127.0.0.1:2040:80'
+        networks:
+            - gitlab
+        depends_on:
+            - plantuml
+        cpuset: '1'
+        restart: always
+
+    plantuml:
+        image: plantuml/plantuml-server
+        domainname: plantuml.roelof.io
+        hostname: plantuml
+        networks:
+            - gitlab
+        cpuset: '1'
+        restart: always
+
+    latex:
+        image: moritzf/fiduswriter:latest
+        domainname: latex.roelof.io
+        hostname: latex
+        volumes:
+            - /srv/fidus/data:/data
+        ports:
+            - '22:22'
+            - '127.0.0.1:2040:80'
+        networks:
+            - gitlab
+        cpuset: '1'
+        restart: always
+
+networks:
+    gitlab:
